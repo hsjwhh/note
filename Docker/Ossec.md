@@ -3,6 +3,7 @@
 >Linux 上使用 Docker 部署 ossec-server，Windows server 上安装 ossec-agent，然后配合之前部署的 Graylog 存储查看日志
 >ossec 官网下载需要的软件 https://www.ossec.net/download-ossec/
 
+### 下载并启动 ossec-server
 - 先下载最新 ossec 镜像；
   ```shell
   docker pull atomicorp/ossec-docker
@@ -42,6 +43,8 @@
   2024/01/16 14:14:31 ossec-syscheckd: INFO: Started (pid: 69).
   2024/01/16 14:14:31 ossec-rootcheck: INFO: Started (pid: 69).
   ```
+
+### 进入容器配置 agent 参数
 - 正常运行 ossec-server 后，使用以下命令进入容器内；
   ```shell
   docker exec -it ossec-server bash
@@ -97,4 +100,30 @@
 
   ** Press ENTER to return to the main menu.
   ```
-- 
+
+### 安装 ossec-agent-win32
+- Windows 系统中安装之前官网下载的 ossec-agent-win32 程序，输入安装了 ossec-server 的服务器 ip，以及之前配置的 agent key，选择【Save】，菜单【Manage】选择 start 或者 restart，刷新下状态，正常应该如下图显示,agent 正常运行；
+  ![ossec-agent](https://myimg.imdouba.com/?/com/uploads/2024/01/ossec-agent-win32.png){width="500px"}
+
+### 配置 ossec-server 输出至 Graylog
+>使用 Graylog 提供的配置方法，https://github.com/Graylog2/graylog-guide-ossec
+
+- 进入 Graylog web控制界面，选择菜单`System -> Inputs`，创建一个新的 **CEF UDP** input，端口自取，名称自取。建议设置时区，以保证日志显示时间是本地时间。
+- 进入 ossec-server 容器内，编辑 `/var/ossec/erc/ossec.conf`，添加一下配置；
+  ```yml
+          <syslog_output>
+            <server>Graylog-server-ip</server>
+            <port>端口自取</port>
+            <format>cef</format>
+          </syslog_output>
+  ```
+- 开启 OSSEC syslog
+  ```shell
+  /var/ossec/bin/ossec-control enable client-syslog
+  ```
+- 重启 ossec-server
+  ```shell
+  /var/ossec/bin/ossec-control enable client-syslog
+  ```
+- 退出容器，查看 log，正常应该看到 提示已开启 syslog 并且连接到了你设置的 graylog-server-ip
+- 现在就可以在 Graylog 内查看到 ossec-server 输出的日志了。
