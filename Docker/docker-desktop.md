@@ -1,6 +1,6 @@
 - WSL2 模式下 docker-desktop-data vm 磁盘映像通常位于以下位置：
   ```shell
-  C:\Users\admin\AppData\Local\Docker\wsl\data\ext4.vhdx
+  C:\Users\用户名\AppData\Local\Docker\wsl\data\ext4.vhdx
   ```
 **按照以下说明将其重新定位到其他目录，并保留所有现有的Docker数据**
 1. 首先，右键单击 Docker Desktop 图标关闭 Docker 桌面，然后选择退出 Docker 桌面，然后，打开命令提示符：
@@ -24,7 +24,7 @@
 
 4. wsl取消注册docker-desktop-data，请注意
     ```shell
-    # C:\Users\admin\AppData\Local\Docker\wsl\data\ext4.vhdx 文件将被自动删除    
+    # C:\Users\用户名\AppData\Local\Docker\wsl\data\ext4.vhdx 文件将被自动删除    
     wsl --unregister docker-desktop-data
     ```
 5. 将导出的 docker-desktop-data 再导入回 wsl，并设置路径，即新的镜像及各种 docker 使用的文件的挂载目录，我这里设置到 E:\Docker-wsl\wsl
