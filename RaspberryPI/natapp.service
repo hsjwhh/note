@@ -1,0 +1,25 @@
+# Centos 7
+# 存放位置 /usr/lib/systemd/system
+# 开启 systemctl start natapp
+# 关闭 systemctl stop natapp
+# 开机启动 systemctl enable natapp
+# 取消开机启动 system disable natapp
+
+[Unit]
+Description=NatApp Service
+Wants=network-online.target
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/natapp/natapp
+# -authtoken=xxxxxx -log=stdout
+# Suppress stderr to eliminate duplicated messages in syslog. NM calls openlog()
+# with LOG_PERROR when run in foreground. But systemd redirects stderr to
+# syslog by default, which results in logging each message twice.
+StandardOutput=syslog
+StandardError=null
+
+
+[Install]
+WantedBy=multi-user.target
