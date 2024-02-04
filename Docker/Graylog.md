@@ -77,5 +77,13 @@
     networks:
       graylog-net:
         driver: bridge
+
+    # 如果在 docker desktop 下运行，需要加上这一段
+    # 并将上面的 volume 本地文件替换成以下命名，或者使用本机指定目录
+    volumes:
+      mongo-db:
+      mongo-configdb:
+      opensearch-data:
+      graylog-data:    
     ```
 - Graylog 启动：转到保存 `docker-compose.yml` 文件的目录内，运行 `docker-compose up -d`，就可以正常启动，然后登录 web 页面进行设置操作；
