@@ -1,0 +1,12 @@
+services:
+    snipeIT:
+        container_name: snipe-it
+        image: snipe/snipe-it:latest
+        ports:
+          - "5081:80"
+        volumes:
+          - /volume1/docker/snipe-it/vol:/var/lib/snipeit
+          - /volume1/docker/snipe-it/log:/root/snipe_it/logs
+          
+        env_file:
+          - my_env_file
