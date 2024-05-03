@@ -1,0 +1,18 @@
+# Mysql Parameters
+MYSQL_PORT_3306_TCP_ADDR=192.168.1.X
+MYSQL_PORT_3306_TCP_PORT=3306
+# 数据库及用户自行创建
+MYSQL_DATABASE=snipe_it 
+MYSQL_USER=snipe_it_db_user
+MYSQL_PASSWORD=YOUR_snipeit_USER_PASSWORD
+
+# Snipe-IT Settings
+APP_ENV=production
+APP_DEBUG=false
+APP_KEY=<<Fill in Later!>>
+APP_URL=http://192.168.1.X:5081
+APP_TIMEZONE=US/Pacific
+APP_LOCALE=zh-CN
+  
+# Docker-specific variables
+PHP_UPLOAD_LIMIT=100
