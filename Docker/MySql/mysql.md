@@ -14,7 +14,7 @@
   ```sh
   MYSQL_ROOT_PASSWORD=你自己的密码
   ```
-- 将 my.cnf 文件放到 conf 目录下的 conf.d 目录下
+- 将 my.cnf 文件放到映射 conf 目录下的 conf.d 目录下
 - 启动
 - 进入容器更改 root 密码
   ```sh
@@ -40,3 +40,4 @@
   ALTER USER 'root'@'%' IDENTIFIED BY '你自己的密码' PASSWORD EXPIRE NEVER;
   ALTER USER 'root'@'localhost' IDENTIFIED BY '你自己的密码';
   ```
+- 创建用于 snipeit 的数据库及用户，并赋予权限

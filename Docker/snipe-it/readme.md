@@ -9,4 +9,6 @@
   An example APP_KEY you could use is: 
   base64:D5oGA+zhFSVA3VwuoZoQ21RAcwBtJv/RGiqOcZ7BUvI=
   ```
-  
+- 先启动 mysql 创建好 snipeit 用的数据库、用户，并赋予相应权限。
+- 正常第一次启动 snipeit 需要一定时间创建数据库
+- 如果启动 mysql 报错，建议进入 snipeit 容器内测试自己设定的数据库及用户，可尝试登录 mysql，能否创建表格等操作

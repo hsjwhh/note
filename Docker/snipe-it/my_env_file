@@ -1,5 +1,5 @@
 # Mysql Parameters
-MYSQL_PORT_3306_TCP_ADDR=192.168.1.X
+MYSQL_PORT_3306_TCP_ADDR=根据自己的地址填写
 MYSQL_PORT_3306_TCP_PORT=3306
 # 数据库及用户自行创建
 MYSQL_DATABASE=snipe_it 
@@ -10,7 +10,7 @@ MYSQL_PASSWORD=YOUR_snipeit_USER_PASSWORD
 APP_ENV=production
 APP_DEBUG=false
 APP_KEY=<<Fill in Later!>>
-APP_URL=http://192.168.1.X:5081
+APP_URL=http://根据自己地址填写:端口
 APP_TIMEZONE=US/Pacific
 APP_LOCALE=zh-CN
   

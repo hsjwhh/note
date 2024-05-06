@@ -6,7 +6,7 @@ services:
           - "5081:80"
         volumes:
           - /volume1/docker/snipe-it/vol:/var/lib/snipeit
-          - /volume1/docker/snipe-it/log:/root/snipe_it/logs
+          - /volume1/docker/snipe-it/log:/var/www/html/storage/logs
           
         env_file:
           - my_env_file
