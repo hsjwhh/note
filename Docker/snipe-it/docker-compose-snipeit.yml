@@ -47,3 +47,10 @@ volumes:
   mysql-log:
   snipeit-data:
   snipeit-log:
+  # 可指定 windows 系统下目录
+  # snipeit-tapes-brother:
+  #   driver: local
+  #   driver_opts:
+  #     o: bind
+  #     type: none
+  #     device: /E/Download/Other/WSL/tapes
