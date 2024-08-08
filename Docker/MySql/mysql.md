@@ -41,3 +41,9 @@
   ALTER USER 'root'@'localhost' IDENTIFIED BY '你自己的密码';
   ```
 - 创建用于 snipeit 的数据库及用户，并赋予权限
+  ```sql
+  CREATE USER 'snipeit_db_user'@'%' IDENTIFIED BY 'qaz@123456';
+  CREATE DATABASE snipeit;
+  GRANT ALL PRIVILEGES ON snipeit.* TO 'snipeit_db_user'@'localhost' WITH GRANT OPTION;
+  FLUSH PRIVILEGES;
+  ```
