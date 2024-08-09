@@ -1,1 +1,1 @@
-测试
+Debian12 安装 UFW 后安装 docker，在 `/etc/docker/daemon.json`文件内设置`"iptables":false`，以便关闭 docker 创建自己的规则，防止跳过 UFW 的限制。但同时这样操作以后，容器之间就无法互相访问，导致容器 ngixn 无法访问 wordpress 内的 php fpm，网站无法正常运行。同时，容器无法访问外网，wordpress无法访问插件、主题等网站内容，无法更新。可通过以下操作解决此类问题
