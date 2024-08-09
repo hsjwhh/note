@@ -37,3 +37,64 @@ sudo iptables -A FORWARD -s 172.21.1.0/24 -j ACCEPT
 - **允许所有源地址是 `172.21.1.0/24` 的数据包通过 FORWARD 链**。也就是说，凡是从 `172.21.1.0` 到 `172.21.1.255` 这个子网来的数据包都将被允许继续转发，而不会被防火墙阻止。
 
 这条命令的意义是允许 Docker 容器子网 `172.21.1.0/24` 内的所有容器之间的流量转发。这对于运行多个容器并且它们需要相互通信的环境非常重要。通过这条规则，容器之间的网络通信不会被防火墙阻止，从而保证应用程序的正常运行。
+
+要将 `iptables` 规则添加到 `ufw` 中，可以通过修改 `ufw` 的配置文件 `after.rules` 来实现。以下是具体步骤：
+
+### 修改 `ufw` 的 `after.rules`
+
+1. **打开 `before.rules` 文件**：
+   使用你喜欢的文本编辑器来编辑 `before.rules` 文件。这个文件通常位于 `/etc/ufw/` 目录下。
+
+   ```bash
+   sudo nano /etc/ufw/before.rules
+   ```
+
+2. **在文件中添加 `iptables` 规则**：
+   在文件中适当的位置添加以下内容。通常建议将其放在文件末尾的 `COMMIT` 之前。
+
+   ```bash
+   # BEGIN CUSTOM RULES FOR DOCKER
+   *filter
+   # 无需添加自定义链条
+   # :DOCKER-USER - [0:0]
+   # -A DOCKER-USER -s 172.21.1.0/24 -j ACCEPT
+   # 直接添加
+   -A FORWARD -s 172.21.1.0/24 -j ACCEPT
+   COMMIT
+   # END CUSTOM RULES FOR DOCKER
+   ```
+
+   这段代码的意义：
+   - `*filter`：定义了一个 `filter` 表。
+   - `:DOCKER-USER - [0:0]`：定义了一个新的 `DOCKER-USER` 链。
+   - `-A DOCKER-USER -s 172.21.1.0/24 -j ACCEPT`：添加了一条规则，允许来自 `172.21.1.0/24` 子网的流量。
+   - `COMMIT`：提交这些规则。
+
+3. **保存并关闭文件**：
+   在 `nano` 编辑器中，按 `Ctrl+O` 保存文件，按 `Ctrl+X` 退出编辑器。
+
+### 重新加载 `ufw`
+
+为了使新添加的规则生效，需要重新加载 `ufw`。
+
+```bash
+sudo ufw reload
+```
+
+### 验证规则
+
+可以通过以下命令检查 `iptables` 规则，确认新规则是否生效：
+
+```bash
+sudo iptables -L FORWARD -v -n
+```
+
+### 注意事项
+
+- **防火墙安全性**：确保其他的 `ufw` 规则依然生效，防止不必要的端口暴露给外网。
+- **规则顺序**：在 `ufw` 中规则的顺序很重要，确保你的自定义规则不会被其他规则覆盖或冲突。
+- **备份配置文件**：在修改任何配置文件之前，建议备份原始文件，以便在出现问题时能够恢复。
+
+通过上述步骤，你可以将 `iptables` 规则集成到 `ufw` 中，使其在系统重启后依然有效，确保 Docker 容器之间的流量转发正常工作。
+
+
