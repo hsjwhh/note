@@ -5,7 +5,7 @@
 ```
 .
 ├── config
-│   ├── prometheus..yml       # 配置主文件
+│   ├── prometheus.yml        # 配置主文件
 │   └── web-config.yml        # 网页验证配置文件
 ├── data                      # 数据永久化存储
 └── docker-compose.yml        # Docker Compose 配置文件
@@ -13,7 +13,7 @@
 
 ### 注意事项
 
-- `data` 文件夹请更新用户及组，否则启动容器会报错，提示权限不足，无法创刊文件，导致无法启动。
+- `data` 文件夹请更新用户及组，否则启动容器会报错，提示权限不足，无法创建文件，导致无法启动。
   ```sh
   sudo chown -R nobody:nogroup data
   ```
@@ -22,7 +22,7 @@
   caller=query_logger.go:114 level=error component=activeQueryTracker msg="Error opening query log file" file=/prometheus/queries.active err="open /prometheus/queries.active: permission denied"
   panic: Unable to create mmap-ed active query log
   ```
-- `web-config.yml` 存储加密了的用户名和密码，以便提供一个简单的登录验证。格式见示例文件，官方说明文档[^1]及生成方法[^2]。
+- `web-config.yml` 存储加密了的用户名和密码，以便提供一个简单的登录验证。格式见示例文件，具体说明请见官方说明文档[^1]及生成方法[^2]。
   ```yml
   # TLS and basic authentication configuration example.
   #
