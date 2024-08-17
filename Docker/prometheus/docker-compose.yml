@@ -2,25 +2,75 @@ services:
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
-    # command:
-    #   - "--config.file=/etc/prometheus/prometheus.yml"
-    #   - "--storage.tsdb.path=/prometheus"
-    #   - "--web.console.libraries=/usr/share/prometheus/console_libraries"
-    #   - "--web.console.templates=/usr/share/prometheus/consoles"
-    # 开启打开 prometheus 页面时需要验证
-    #   - "--web.config.file=/etc/prometheus/web.yml"
+    command:
+      # docker 镜像中默认执行的命令行
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+      - "--web.console.templates=/usr/share/prometheus/consoles"
+      # 开启打开 prometheus 页面时需要验证
+      - "--web.config.file=/etc/prometheus/web.yml"
     ports:
-      - "9090:9090"
+      - 9090:9090
     environment:
       - TZ=Asia/Shanghai
     volumes:
-      - ./config:/etc/prometheus
-      - ./data:/prometheus
+      - ./prometheus-config:/etc/prometheus
+      - ./prometheus-data:/prometheus
     # depends_on:
     #   - xxxxxx
     networks:
       mylan:
         ipv4_address: 172.21.1.6
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    command:
+      - '--path.rootfs=/host'
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points'
+      - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
+    ports:
+      - 9100:9100
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+      - /:/host:ro,rslave
+    networks:
+      mylan:
+        ipv4_address: 172.21.1.7
+    # deploy:
+    #   mode: global
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    # 主机小硬盘，限制 log 文件大小。文件最大 10M，最多5个。
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    # user: "472:0"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin      # 设置管理员用户名
+      - GF_SECURITY_ADMIN_PASSWORD=admin  # 设置管理员密码
+      - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s/
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource  # 安装一些插件（可选）
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana-data:/var/lib/grafana  # 挂载数据卷，用于持久化存储
+    networks:
+      mylan:
+        ipv4_address: 172.21.1.8
 
 networks:
   # 沿用之前创建的网络，方便管理。

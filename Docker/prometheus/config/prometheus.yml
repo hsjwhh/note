@@ -26,3 +26,11 @@ scrape_configs:
 
     static_configs:
       - targets: ["localhost:9090"]
+    
+    basic_auth:
+      username: "xxxxxx"
+      password: "xxxxxxxxxxxxxxx"
+
+  - job_name: "node-exporter"
+    static_configs:
+      - targets: ["node-exporter:9100"]
