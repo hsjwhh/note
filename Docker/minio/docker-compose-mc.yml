@@ -1,0 +1,19 @@
+services:
+  miniomc:
+    image: minio/mc:latest
+    container_name: miniomc
+    restart: unless-stopped
+    entrypoint: /bin/sh
+    tty: true
+    volumes:
+      - mc:/root/.mc
+    networks:
+      dockerlan:
+        ipv4_address: 172.20.1.14
+
+networks:
+  dockerlan:
+    external: true
+
+volumes:
+  mc:
