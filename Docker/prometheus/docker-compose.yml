@@ -58,6 +58,8 @@ services:
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
+    # if you are running as root then set it to 0
+    # else find the right id with the id -u command
     # user: "472:0"
     environment:
       - GF_SECURITY_ADMIN_USER=admin      # 设置管理员用户名
