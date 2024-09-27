@@ -1,4 +1,4 @@
-> 转 https://www.orchome.com/17176
+> 转载 https://www.orchome.com/17176
 
 ### 一. 配置Containerd配置拉取镜像加速
 
