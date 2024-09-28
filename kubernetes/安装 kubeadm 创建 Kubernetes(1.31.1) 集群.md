@@ -148,7 +148,9 @@ sudo systemctl start containerd
   sudo apt-mark hold kubelet kubeadm kubectl
   ```
 
-  kubelet 现在每隔几秒就会重启，因为它陷入了一个等待 kubeadm 指令的死循环。
+  > [!NOTE]
+  > kubelet 现在每隔几秒就会重启，因为它陷入了一个等待 kubeadm 指令的死循环。
+  > **工作节点按照以上方法步骤配置 👆**
 
 ### 3. 部署 Kubernetes 控制平面
 
