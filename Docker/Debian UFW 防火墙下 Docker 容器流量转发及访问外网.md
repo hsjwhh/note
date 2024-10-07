@@ -1,4 +1,7 @@
 Debian12 安装 UFW 后安装 docker，在 `/etc/docker/daemon.json`文件内设置`"iptables":false`，以便关闭 docker 创建自己的规则，防止跳过 UFW 的限制。但同时这样操作以后，容器之间就无法互相访问，导致容器 ngixn 无法访问 wordpress 内的 php fpm，网站无法正常运行。同时，容器无法访问外网，wordpress无法访问插件、主题等网站内容，无法更新。可通过以下操作解决此类问题
+
+## 一. 容器间流量转发以便互相访问
+
 ```bash
 sudo iptables -A FORWARD -s 172.21.1.0/24 -j ACCEPT
 ```
@@ -98,3 +101,75 @@ sudo iptables -L FORWARD -v -n
 通过上述步骤，你可以将 `iptables` 规则集成到 `ufw` 中，使其在系统重启后依然有效，确保 Docker 容器之间的流量转发正常工作。
 
 
+## 二. 容器访问外网
+
+```bash
+sudo iptables -t nat -A POSTROUTING -s 172.21.1.0/24 -o ens33 -j MASQUERADE
+```
+
+### 命令详细解释
+
+- `sudo`：以超级用户权限执行命令。
+
+- `iptables`：防火墙管理工具。
+
+- `-t nat`：指定要操作的表，这里是 `nat` 表。`nat` 表主要用于网络地址转换（NAT）操作。
+
+- `-A POSTROUTING`：将规则添加到 `POSTROUTING` 链中。`POSTROUTING` 链用于在数据包即将离开主机时进行处理。
+
+- `-s 172.21.1.0/24`：指定源地址范围，这里是 Docker 容器的 IP 地址段 `172.21.1.0/24`。
+
+- `-o eth0`：指定输出网络接口，这里是主机的外部网络接口 `eth0`。意味着只有当数据包从这个接口发送时，规则才会应用。
+
+- `-j MASQUERADE`：指定目标操作为伪装（MASQUERADE）。MASQUERADE 是一种动态的 SNAT，它会将数据包的源 IP 地址更改为主机的外部 IP 地址。
+
+### 执行此命令的作用
+
+1. **源地址伪装**：将来自 Docker 容器网络（172.21.1.0/24）的数据包的源地址更改为主机的外部 IP 地址。这样做的好处是外部网络会认为数据包是来自主机，而不是来自容器网络。
+
+2. **使容器能访问外部网络**：通过伪装，容器内的应用程序可以访问外部网络资源，例如互联网，同时保持对外部网络的透明性。
+
+3. **避免网络冲突**：如果你的容器网络使用了私有 IP 地址段，而这些地址在外部网络中可能会引起冲突，伪装可以帮助避免这种情况。
+
+要将 `iptables` 规则添加到 `ufw` 中，可以通过修改 `ufw` 的配置文件 `after.rules` 来实现。以下是具体步骤：
+
+### 修改 `ufw` 的 `after.rules`
+
+1. **编辑 `/etc/ufw/before.rules` 文件**：
+
+   ```bash
+   sudo nano /etc/ufw/before.rules
+   ```
+
+2. **在文件中添加规则**：
+
+   在文件的适当位置添加以下内容（通常在 `*nat` 部分），可直接放末尾如果文件内没有*nat：
+
+   ```plaintext
+   # rules.before
+   #
+   # Rules that should be run before the ufw command line added rules. Custom
+   # rules should be added to this file to ensure they are maintained.
+   #
+   # Do not remove the 'COMMIT' line or these rules won't be processed.
+   #
+   *nat
+   :POSTROUTING ACCEPT [0:0]
+   # Allow Docker containers to communicate with external networks
+   -A POSTROUTING -s 172.21.1.0/24 -o eth0 -j MASQUERADE
+   COMMIT
+   ```
+
+3. **保存并退出**：
+
+   按 `Ctrl + X`，然后按 `Y` 保存并退出。
+
+4. **重新加载 `ufw`**：
+
+   ```bash
+   sudo ufw reload
+   ```
+
+### 总结
+
+通过设置源地址伪装规则，你可以确保来自 Docker 容器的流量在通过主机的外部网络接口时被伪装为主机的外部 IP 地址，从而允许容器访问外部网络资源。将该规则添加到 `ufw` 的配置文件中，可以确保规则在系统重启后仍然有效。
