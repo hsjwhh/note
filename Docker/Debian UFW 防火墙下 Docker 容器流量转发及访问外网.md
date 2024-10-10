@@ -58,9 +58,6 @@ sudo iptables -A FORWARD -s 172.21.1.0/24 -j ACCEPT
    ```bash
    # BEGIN CUSTOM RULES FOR DOCKER
    *filter
-   # 无需添加自定义链条
-   # :DOCKER-USER - [0:0]
-   # -A DOCKER-USER -s 172.21.1.0/24 -j ACCEPT
    # 直接添加
    -A FORWARD -s 172.21.1.0/24 -j ACCEPT
    COMMIT
@@ -69,12 +66,11 @@ sudo iptables -A FORWARD -s 172.21.1.0/24 -j ACCEPT
 
    这段代码的意义：
    - `*filter`：定义了一个 `filter` 表。
-   - `:DOCKER-USER - [0:0]`：定义了一个新的 `DOCKER-USER` 链。
-   - `-A DOCKER-USER -s 172.21.1.0/24 -j ACCEPT`：添加了一条规则，允许来自 `172.21.1.0/24` 子网的流量。
+   - `-A FORWARD -s 172.21.1.0/24 -j ACCEPT`：添加了一条规则，允许 Docker 容器子网 `172.21.1.0/24` 内的所有容器之间的流量转发。
    - `COMMIT`：提交这些规则。
 
 3. **保存并关闭文件**：
-   在 `nano` 编辑器中，按 `Ctrl+O` 保存文件，按 `Ctrl+X` 退出编辑器。
+   在 `nano` 编辑器中，按 `Ctrl+X` 保存退出编辑器。
 
 ### 重新加载 `ufw`
 
