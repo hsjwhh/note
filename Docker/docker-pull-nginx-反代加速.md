@@ -80,6 +80,12 @@ server {
     # 转发认证相关
     proxy_set_header Authorization $http_authorization;
     proxy_pass_header  Authorization;
+
+    # 重写 www-authenticate 头为你的反代地址
+    proxy_hide_header www-authenticate;
+    add_header www-authenticate 'Bearer realm="https://docker.example.com/token",service="registry.docker.io"' always;
+    # always 参数确保该头部在返回 401 错误时无论什么情况下都会被添加。
+
     # 对 upstream 状态码检查，实现 error_page 错误重定向
     proxy_intercept_errors on;
     recursive_error_pages on;
@@ -87,6 +93,22 @@ server {
     error_page 301 302 307 = @handle_redirect;
     # 错误页面处理
     error_page 502 = /502.html;
+  }
+
+  # 处理 Docker OAuth2 Token 认证请求
+  location /token {
+    resolver 1.1.1.1 valid=600s;
+    proxy_pass https://auth.docker.io;  # Docker 认证服务器
+    # 设置请求头，确保转发正确
+    proxy_set_header Host auth.docker.io;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    # 传递 Authorization 头信息，获取 Token
+    proxy_set_header Authorization $http_authorization;
+    proxy_pass_header Authorization;
+    # 禁用缓存
+    proxy_buffering off;
   }
 
   location @handle_redirect {
