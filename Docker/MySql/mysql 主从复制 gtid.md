@@ -54,6 +54,14 @@ gtid_mode = ON
 enforce-gtid-consistency = ON
 ```
 
+在主服务器 MySQL 数据库中创建用于复制的用户：
+
+```sql
+CREATE USER 'replica_user'@'%' IDENTIFIED BY 'your_password';
+GRANT REPLICATION SLAVE ON *.* TO 'replica_user'@'%';
+FLUSH PRIVILEGES;
+```
+
 #### 2. 从服务器配置
 
 在从服务器的 MySQL 配置文件中添加以下设置：
