@@ -62,6 +62,17 @@ GRANT REPLICATION SLAVE ON *.* TO 'replica_user'@'%';
 FLUSH PRIVILEGES;
 ```
 
+在主服务器 MySQL 数据库中导出自行创建的数据库结构
+
+```sql
+# 整个数据库
+mysqldump -u root -p --no-data wordpress > wordpress.sql
+# 或单独的表
+mysqldump -u root -p --no-data your_database your_table > your_table.sql
+# 导入从数据库
+mysql -u root -p your_database < your_table.sql
+```
+
 #### 2. 从服务器配置
 
 在从服务器的 MySQL 配置文件中添加以下设置：
@@ -100,6 +111,9 @@ CHANGE REPLICATION SOURCE TO
    SOURCE_PASSWORD='your_password',
    SOURCE_AUTO_POSITION = 1, 
    GET_SOURCE_PUBLIC_KEY = 1;
+
+   # 依据系统提示可以在执行 START REPLICA 时，直接在命令中指定用户名和密码, 安全性高：
+   START REPLICA USER='your_replica_user' PASSWORD='your_password';
 ```
 
 然后，启动复制进程：
